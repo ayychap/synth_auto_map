@@ -49,9 +49,10 @@ class SoundFile:
 
         if chart:
             plt.style.use("cyberpunk")
-            plt.plot(dtempo)
-            plt.xlim([0, librosa.get_duration(y=self.y, sr=self.samplingrate)])
+            plt.plot(np.linspace(0, librosa.get_duration(y=self.y, sr=self.samplingrate) / 60, dtempo.size), dtempo)
             plt.title("Detected BPM")
+            plt.xlabel("Minutes")
+            plt.ylabel("BPM")
             plt.show()
 
         # and return the mode
@@ -68,7 +69,6 @@ class SoundFile:
 
     def generate_beatmap(self, path):
         positions, z_vals = self.time_to_synthmap(self.timestamps)
-        # TODO: should Segments be None or "null"?
         notes = [[{"Position": [0, 0, z], "Segments": None, "Type": 0}] for z in z_vals]
 
         # format yoinked from synth_mapping_helper <3
