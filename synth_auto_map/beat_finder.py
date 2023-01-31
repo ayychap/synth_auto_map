@@ -38,7 +38,7 @@ class SoundConversion:
             # TODO: get autodetection working
             self.offset = 0
         else:
-            self.offset = offset * 1000
+            self.offset = offset / 1000
 
         self.timestamps = None
 
@@ -64,13 +64,14 @@ class SoundConversion:
         '''
 
         # convert seconds to number of increments
-        position = np.round((time_elapsed - self.offset) * self.increment).astype(int)
+        position = np.round((time_elapsed + self.offset) * self.increment).astype(int)
 
         if rounding is None:
             # z's do not need to be modified
-            z = (time_elapsed - self.offset) * 2 * 10
+            z = (time_elapsed + self.offset) * 2 * 10
         else:
             # round the positions to the required step, and calculate the corrected z timing
+            rounding = 64 / rounding
             position = (rounding * np.round(position / rounding)).astype(int)
             z = position * 2 * 1 / self.increment
 
