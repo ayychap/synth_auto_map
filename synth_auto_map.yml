@@ -1,4 +1,4 @@
-name: music_mangling
+name: synth_auto_map
 channels:
   - defaults
 dependencies:
@@ -80,4 +80,4 @@ dependencies:
     - synth-mapping-helper==0.9.6
     - threadpoolctl==3.1.0
     - urllib3==1.26.14
-prefix: /Users/Shared/anaconda3/envs/music_mangling
+prefix: /Users/Shared/anaconda3/envs/synth_auto_map

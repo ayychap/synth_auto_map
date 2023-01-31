@@ -1,6 +1,9 @@
 import numpy as np
+import synth_mapping_helper as smh
 
-def spiralize(t, r, velocity_modifier=1, start_angle=0, center=[0,0].reshape(1,2)):
+
+# functions for generating various shapes from time vectors
+def spiralize(t, r, velocity_modifier=1, start_angle=0, center=np.array([0,0]).reshape(1,2)):
     '''
     Generate a spiral pattern around a center line, with variable rotational velocity and radius
     Center line coordinates could be generated with a rail in the editor, but should be interpolated for proper timing
@@ -26,10 +29,5 @@ def spiralize(t, r, velocity_modifier=1, start_angle=0, center=[0,0].reshape(1,2
     y_vals = r * np.sin(velocity_modifier * (t - t[1]) + start_angle) + center[:][1]
     return np.array([x_vals, y_vals, t])
 
-def snap_to_rail(notes, rail):
-    '''snap existing notes to a rail'''
-
-    #TODO: interpolate, might want to use splines to get a continuous function
-    # use synth_mapping_helper.rails.get_position_at
 
 
