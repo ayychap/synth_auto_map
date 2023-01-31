@@ -49,6 +49,10 @@ class SoundConversion:
 
         self.use_decomp(decomposition)
 
+    def update_bpm(self, new_bpm):
+        self.bpm = new_bpm
+        self.increment = self.bpm * 64 / 60
+
     def time_to_synthmap(self, time_elapsed, rounding=None):
         '''
         Convert timestamps to beatmap timings. If working with a known fixed bpm and maximum note separation,
@@ -95,7 +99,7 @@ class SoundConversion:
             plt.show()
 
         # and return the mode
-        return st.mode(dtempo).mode[0]
+        return st.mode(dtempo, keepdims=True).mode[0]
 
     def tempo_breakdown(self):
         '''Find chunks of common tempo and return them with estimated time windows'''
@@ -111,26 +115,11 @@ class SoundConversion:
 
         return pd.DataFrame(data, columns=["BPM", "Time"])
 
-    def beats(self, audio_series):
-        '''
-        Detect beat positions and extract timestamps
-        '''
-
-        pulse_array = librosa.beat.plp(y=audio_series, sr=self.samplingrate)
-        beats_plp = np.flatnonzero(librosa.util.localmax(pulse_array))
-
-        onset_env = librosa.onset.onset_strength(y=audio_series, sr=self.samplingrate)
-        times = librosa.times_like(onset_env, sr=self.samplingrate)
-
-        self.timestamps = times[beats_plp]  # should be timestamps in seconds
-
     def notes(self, audio_series):
         '''
         Detect note positions and extract timestamps
-        This might work better? Compare!
         '''
 
-        # TODO: test and compare to beats()
         self.timestamps = librosa.onset.onset_detect(y=audio_series, sr=self.samplingrate, units="time")
 
     def use_decomp(self, decomp):
