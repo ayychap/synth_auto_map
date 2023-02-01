@@ -19,10 +19,6 @@ Since this works based on time positioning, you can use this with variable BPM t
 
 `beat_finder.py` also contains utilities to automatically detect the most stable BPM, and return BPM information over time, including onset timing of each BPM change.
 
-### Snap to rail
-
-Take a set of notes and snap them all to rails of the same color. `helper_extensions.py` allows you to work with two beatmap JSON files simultaneously: a time position file (notes with arbitrary xy coordinates) and a location position file (rails with hand positions.) This allows you to work with hand positioning and beat positioning separately.
-
 ## Not Features
 
 This will not generate a whole map for you! Only certain processes are automated. You'll still need to do the work of positioning notes, fine tuning timing, setting up hand colors, and placing walls. There are some [excellent helper tools](https://github.com/adosikas/synth_mapping_helper) that can help you with some processes, but you will still need to use the editor and test your maps.
