@@ -50,8 +50,11 @@ class SoundConversion:
         self.use_decomp(decomposition)
 
     def update_bpm(self, new_bpm):
-        self.bpm = new_bpm
-        self.increment = self.bpm * 64 / 60
+        if new_bpm is None:
+            self.bpm = self.tempos()
+        else:
+            self.bpm = new_bpm
+            self.increment = self.bpm * 64 / 60
 
     def time_to_synthmap(self, time_elapsed, rounding=None):
         '''
