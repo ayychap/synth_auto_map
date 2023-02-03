@@ -19,6 +19,12 @@ Since this works based on time positioning, you can use this with variable BPM t
 
 `beat_finder.py` also contains utilities to automatically detect the most stable BPM, and return BPM information over time, including onset timing of each BPM change.
 
+### Convert Audio Trip Maps
+
+If you also have Audio Trip, you can map hand positioning in VR and port it over! `audio_trip_conversion.py` contains functions for converting Audio Trip maps (choreographies) to Synth Riders. This works with gems to notes and ribbons to rails only.
+
+Check out [Trip Sitter](https://github.com/Blogshot/trip-sitter) if you'd like to convert a Synth Riders beatmap to Audio Trip.
+
 ## Not Features
 
 This will not generate a whole map for you! Only certain processes are automated. You'll still need to do the work of positioning notes, fine tuning timing, setting up hand colors, and placing walls. There are some [excellent helper tools](https://github.com/adosikas/synth_mapping_helper) that can help you with some processes, but you will still need to use the editor and test your maps.
