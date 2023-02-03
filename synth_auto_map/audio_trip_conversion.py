@@ -1,5 +1,19 @@
 import json
 
+'''Functions for conversion from Audio Trip .ats files to Synth Riders compatible JSON.
+    This will convert gems and ribbons ONLY.
+
+    Audio Trip's beatmap editor is in VR and allows for live hand position editing, while the
+    Synth Riders editor allows for easier fine tuning. Combined with beat_finder.py, this allows
+    you to map beats somewhat automatically, and generate live hand positioning separately without
+    requiring you to stay on beat in the Audio Trip editor. Make sure that your Audio Trip hand 
+    positioning is completely converted to rails, modify as desired, and copy-paste the note
+    JSON with snap-to-rail enabled. Voila! Your notes are snapped to hand positions.
+    
+    Trip Sitter (https://github.com/Blogshot/trip-sitter) allows for conversion back to Audio Trip 
+    editor, giving you the ability to use automatic note finding and both beatmap editors to create 
+    tracks for either game.'''
+
 
 def xy_synth_to_ats(x, y):
     """ Convert Synth Riders x,y coords to Audio Trip
@@ -56,7 +70,7 @@ def ats_to_synth(path, choreo_number=None):
         "lights": [],
     }
 
-    '''Dictionary for mapping from gems to notes
+    '''Dictionary for mapping from gems (AT) to notes (SR)
             right gems type 2, right ribbons type 4
             left gems type 1, left ribbons type 3
             right notes type 0
@@ -77,7 +91,9 @@ def ats_to_synth(path, choreo_number=None):
         n = gem['time']['numerator']
         d = gem['time']['denominator']
 
+        # SR position format: count of 1/64th increments
         s_position = round((b + n / d) * 64)
+        # SR time format: seconds * 20
         z_val = 20 * s_position / increment
         x, y = xy_ats_to_synth(gem['position']['x'], gem['position']['y'])
 
@@ -86,7 +102,7 @@ def ats_to_synth(path, choreo_number=None):
             # it's a rail!
             new_note = {"Position": [x, y, z_val], "Segments": [], "Type": type_map[type]}
 
-            # time step in 20 * seconds
+            # time step between nodes in 20 * seconds
             # see var length_beatDivision for calculation:
             # https://github.com/Blogshot/trip-sitter/blob/master/SR_to_AT/conversion_elements.js
             step = 60 * 20 / (bpm * gem['beatDivision'])
@@ -97,6 +113,7 @@ def ats_to_synth(path, choreo_number=None):
                 z_val += step
                 new_note["Segments"].append([x, y, z_val])
 
+            # Add to an existing position if one already exists
             if s_position in synth_json['notes']:
                 synth_json['notes'][s_position].append(new_note)
             else:
@@ -106,6 +123,7 @@ def ats_to_synth(path, choreo_number=None):
             # it's a note!
             new_note = {"Position": [x, y, z_val], "Segments": None, "Type": type_map[type]}
 
+            # Add to an existing position if one already exists
             if s_position in synth_json['notes']:
                 synth_json['notes'][s_position].append(new_note)
             else:
