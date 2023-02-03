@@ -70,13 +70,13 @@ class SoundConversion:
         position = np.round((time_elapsed + self.offset) * self.increment).astype(int)
 
         if rounding is None:
-            # z's do not need to be modified
+            # z's do not need to be modified, these are seconds * 20
             z = (time_elapsed + self.offset) * 2 * 10
         else:
             # round the positions to the required step, and calculate the corrected z timing
             rounding = 64 / rounding
             position = (rounding * np.round(position / rounding)).astype(int)
-            z = position * 2 * 1 / self.increment
+            z = position * 20 / self.increment
 
         position = position.astype(str)  # string labels
         return position, z
