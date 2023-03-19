@@ -40,6 +40,11 @@ def xy_ats_to_synth(x, y):
 
     return xs, ys
 
+def all_rails():
+    ''''''
+
+def validate_rails(synth_json):
+    ''''''
 
 def ats_to_synth(path, choreo_number=None):
     '''
@@ -55,6 +60,13 @@ def ats_to_synth(path, choreo_number=None):
     bpm = data['metadata']['avgBPM']
     increment = bpm * 64 / 60
 
+    # get time and increment offsets
+    offset_list = [section['startTimeInSeconds'] for section in data['metadata']['tempoSections']
+                   if section['doesStartNewMeasure']]
+    offset = offset_list[0]
+    offset_inc = round(offset * increment)
+
+
     synth_json = {
         "BPM": bpm,
         "startMeasure": 0,
@@ -69,6 +81,7 @@ def ats_to_synth(path, choreo_number=None):
         "slides": [],
         "lights": [],
     }
+
 
     '''Dictionary for mapping from gems (AT) to notes (SR)
             right gems type 2, right ribbons type 4
@@ -92,9 +105,9 @@ def ats_to_synth(path, choreo_number=None):
         d = gem['time']['denominator']
 
         # SR position format: count of 1/64th increments
-        s_position = round((b + n / d) * 64)
+        s_position = round((b + n / d) * 64) + offset_inc
         # SR time format: seconds * 20
-        z_val = 20 * s_position / increment
+        z_val = 20 * s_position / increment + offset * 20
         x, y = xy_ats_to_synth(gem['position']['x'], gem['position']['y'])
 
         type = gem['type']
@@ -108,10 +121,10 @@ def ats_to_synth(path, choreo_number=None):
             step = 60 * 20 / (bpm * gem['beatDivision'])
 
             # now append all of those segments
-            for node in gem['subPositions']:
-                x, y = xy_ats_to_synth(node['x'], node['y'])
+            for node in gem['subPositions'][1:]:
+                x_offset, y_offset = xy_ats_to_synth(node['x'], node['y'])
                 z_val += step
-                new_note["Segments"].append([x, y, z_val])
+                new_note["Segments"].append([x+x_offset, y+y_offset, z_val])
 
             # Add to an existing position if one already exists
             if s_position in synth_json['notes']:
