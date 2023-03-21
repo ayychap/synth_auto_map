@@ -21,13 +21,17 @@ import numpy as np
 def xy_synth_to_ats(x, y):
     """ Convert Synth Riders x,y coords to Audio Trip
     Keep inside the comfort grid (unless it's really wild and wide)
-    synth range
+    synth range currently going down to -1.86
     -0.953500032 < x < 0.9575001 half-width 0.9555000659999999
     -0.6813 < y < 0.6837 half-width 0.6825
     AT range
     -0.8 < x < 0.8
-    0.2 < y < 1.8"""
+    0.2 < y < 1.8
 
+    new: -1 < x < 1
+    0 < y < 2"""
+
+    #TODO: update functions, currently wrong
     xa = 0.84 * (x - 0.002)
     ya = 1.17 * (y - 0.0012) + 1
 
@@ -36,10 +40,16 @@ def xy_synth_to_ats(x, y):
 
 def xy_ats_to_synth(x, y):
     """Convert Audio Trip x, y coords to Synth Riders
-    Inverse of above"""
+    Inverse of above
+    synth range
+    -0.953500032 < x < 0.9575001 half-width 0.9555000659999999
+    -0.6813 < y < 0.6837 half-width 0.6825
+    AT range
+    -1 < x < 1
+    0 < y < 2"""
 
-    xs = 1.19 * x + 0.002
-    ys = 0.85 * (y - 1) + 0.0012
+    xs = 0.9555 * x + 0.002
+    ys = 0.6825 * (y - 1) + 0.0012
 
     return xs, ys
 
@@ -221,6 +231,9 @@ def ats_to_synth(path, choreo_name=None, convert_to_rails=False):
         name_list = [c['header']['name'] for c in choreos]
         if choreo_name in name_list:
             choreo_num = name_list.index(choreo_name)
+        else:
+            choreo_size = [len(c['data']['events']) for c in choreos]
+            choreo_num = choreo_size.index(max(choreo_size))
     else:
         # if the specific index wasn't specified, or wasn't valid, use the one with the most data
         choreo_size = [len(c['data']['events']) for c in choreos]
@@ -251,9 +264,9 @@ def ats_to_synth(path, choreo_name=None, convert_to_rails=False):
 
             # now append all of those segments
             for node in gem['subPositions'][1:]:
-                x_offset, y_offset = xy_ats_to_synth(node['x'], node['y'])
+                x_offset, y_offset = xy_ats_to_synth(gem['position']['x'] + node['x'], gem['position']['y'] + node['y'])
                 z_val += step
-                new_note["Segments"].append([x + x_offset, y + y_offset, z_val])
+                new_note["Segments"].append([x_offset, y_offset, z_val])
 
             # Add to an existing position if one already exists
             if s_position in synth_json['notes']:
