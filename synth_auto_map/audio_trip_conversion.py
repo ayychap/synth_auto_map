@@ -171,7 +171,7 @@ def validate_rails(synth_json):
     return new_json
 
 
-def ats_to_synth(path, choreo_number=None, convert_to_rails=False):
+def ats_to_synth(path, choreo_name=None, convert_to_rails=False):
     '''
     Import an audio trip ats file to synth riders (basic gems/notes and ribbons/rails only)
 
@@ -216,12 +216,17 @@ def ats_to_synth(path, choreo_number=None, convert_to_rails=False):
 
     # extract the choreography map to use
     choreos = data['choreographies']['list']
-    if choreo_number is None:
-        # if the specific index wasn't specified, use the one with the most data
+    if isinstance(choreo_name, str):
+        # find the index of the choreography name
+        name_list = [c['header']['name'] for c in choreos]
+        if choreo_name in name_list:
+            choreo_num = name_list.index(choreo_name)
+    else:
+        # if the specific index wasn't specified, or wasn't valid, use the one with the most data
         choreo_size = [len(c['data']['events']) for c in choreos]
-        choreo_number = choreo_size.index(max(choreo_size))
+        choreo_num = choreo_size.index(max(choreo_size))
 
-    choreo = choreos[choreo_number]['data']['events']
+    choreo = choreos[choreo_num]['data']['events']
 
     for gem in choreo:
         b = gem['time']['beat']
