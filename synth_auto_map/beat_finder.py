@@ -1,6 +1,5 @@
 import librosa
 from spleeter.separator import Separator
-from spleeter.audio.adapter import AudioAdapter
 from pathlib import Path
 import numpy as np
 from scipy import stats as st
@@ -11,7 +10,7 @@ import matplotlib.pyplot as plt
 import mplcyberpunk
 
 
-class SoundConversion:
+class MapConversion:
     def __init__(self, filename, bpm=None, offset=None, decomposition=None):
         '''
         Initialize an object to extract and manipulate waveform data from an audio file. Everything is calculated in
@@ -149,7 +148,7 @@ class SoundConversion:
         :rounding: integer increment to round to, otherwise everything will be to the nearest 64th
         '''
         positions, z_vals = self.time_to_synthmap(self.timestamps, rounding=rounding)
-        notes = [[{"Position": [0, 0, z], "Segments": None, "Type": 0}] for z in z_vals]
+        notes = [[{"Position": [0.202, 0, z], "Segments": None, "Type": 0}, {"Position": [-0.108, 0, z], "Segments": None, "Type": 1}] for z in z_vals]
 
         beatmap = {
             "BPM": self.bpm,
@@ -170,19 +169,72 @@ class SoundConversion:
         with open(path, "w") as outfile:
             outfile.write(json_string)
 
+
 class SplitAudio:
     def __init__(self, filename, split=2, bpm=None, offset=None, decomposition=None):
+        """
+        Contains a dictionary of MapConversion objects with audio from multiple source tracks
+        Spleeter is used to generate separate .wav files for each source in the audio
+        """
 
         Path("/spleeter_output").mkdir(parents=True, exist_ok=True)
-        self.separate_track(filename, split)
-
-    def separate_track(self, filename, split):
-        valid_splits=[2, 4, 5]
+        valid_splits = [2, 4, 5]
         if split not in valid_splits:
             print(f"split must be 2, 4, or 5, but received {split}. Set to default 2.")
-            split = 2
+            self.split = 2
+        else:
+            self.split = split
 
-        separator = Separator(f'spleeter:{split}stems')
+        self.bpm = bpm
+        self.offset = offset
+
+        self.separate_track(filename)
+
+        # get all of the generated tracks
+        working_dir = Path.cwd()
+        track_path = Path(working_dir / "spleeter_output"/f"{filename[:-4]}")
+        tracks = list(track_path.rglob("*.wav"))
+        self.track_select = dict(zip([t.name[:-4] for t in tracks], tracks))
+
+        # generate MapConversion objects and generate json files for all
+        self.beatmap_generators = self.generate_converters(decomposition)
+        self.generate_all_maps()
+
+
+    def separate_track(self, filename):
+        """
+        Separate tracks with Spleeter and perform some preprocessing
+        """
+        separator = Separator(f'spleeter:{self.split}stems')
+        #TODO: preprocess audio to remove quiet sound artefacts from other tracks
         separator.separate_to_file(filename, "spleeter_output")
 
 
+    def generate_converters(self, decomposition):
+        """
+        Create a separate MapConversion object for each track
+        """
+        maps = {}
+        if self.bpm is None or self.offset is None:
+            bpm_source_select = {2: "accompaniment", 4: "drums", 5: "drums"}
+            # generate the first map and update the bpm automatically
+            maps[bpm_source_select[self.split]] = MapConversion(self.track_select[bpm_source_select[self.split]],
+                                                                bpm=self.bpm, offset=self.offset,
+                                                                decomposition=decomposition)
+            self.bpm = maps[bpm_source_select[self.split]].bpm
+            # future proofing: will update offset once automatic offset detection is working
+            self.offset = maps[bpm_source_select[self.split]].offset
+
+        # generate all of the other maps, exclude any keys that already exist
+        for key in self.track_select:
+            if key not in maps:
+                maps[key] = MapConversion(self.track_select[key], bpm=self.bpm, offset=self.offset,
+                                          decomposition=decomposition)
+        return maps
+
+    def generate_all_maps(self):
+        """
+        Create a json file for each track. Uses settings from each track individually, so these can be modified.
+        """
+        for key in self.beatmap_generators:
+            self.beatmap_generators[key].generate_beatmap(f"{key}_beatmap.json")

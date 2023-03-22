@@ -15,6 +15,7 @@ You can specify:
 *   Increment to round to, 1/64 (the maximum in the editor) is the default.
 *   BPM and offset, if known.
 *   Some decomposition preprocessing, currently percussive and harmonic element separation
+*   [Spleeter](https://github.com/deezer/spleeter) preprocessing to generate 2, 4, or 5 split audio tracks and associated maps.
 
 Since this works based on time positioning, you can use this with variable BPM tracks, though you may run into rounding 
 limitations due to the editor format. Since this detects the most prominent beats in an audio track, you may want to do some 
@@ -44,7 +45,7 @@ that can help you with some processes, but you will still need to use the editor
 
 Sorry, no UI for this. However, self-contained, guided Google Colab demos are available for some features if you'd like 
 to test things out without any extra work or aren't so comfortable with coding. Most input is set up in forms, so code 
-modification is limited. You can do it! I believe in you! You might even learn a bit of Python along the way.
+modification is limited.
 
 *   [Synth Beat Finder](https://colab.research.google.com/drive/10ssrPt996BzRDTrVG2RHwYEEqyqulG9L?usp=sharing): generate note timing positions from an audio file, and estimate BPM.
 *   [Audio Trip to Synth Converter](https://colab.research.google.com/drive/1J_nkdsrI1pGqMmmCOKq3uTQv77HTCRsw?usp=sharing): convert Audio Trip choreography to Synth Riders maps.

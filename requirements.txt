@@ -6,4 +6,4 @@ pandas~=1.5.2
 matplotlib~=3.6.3
 mplcyberpunk~=0.6.0
 scipy~=1.10.0
-synth-mapping-helper~=1.0
+synth-mapping-helper~=0.9.6
