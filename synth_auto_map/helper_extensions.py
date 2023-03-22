@@ -102,3 +102,7 @@ def snap_to_rail(beats, rail_patterns):
                                  if smh.rails.get_position_at(getattr(rail_patterns, c), n) is not None
                                  else np.array([0, 0])) for n in times.keys()}
         beats.apply_for_notes(arbitrary_xy, repositioning_map, types=[c])
+
+
+#TODO: add helper functions for thinning (keep only notes on mod 32 subdivision etc.),
+# compressing the map, and changing crossover patterns to parallel

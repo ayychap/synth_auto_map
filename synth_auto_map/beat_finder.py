@@ -1,4 +1,7 @@
 import librosa
+from spleeter.separator import Separator
+from spleeter.audio.adapter import AudioAdapter
+from pathlib import Path
 import numpy as np
 from scipy import stats as st
 import pandas as pd
@@ -166,3 +169,20 @@ class SoundConversion:
         json_string = json.dumps(beatmap)
         with open(path, "w") as outfile:
             outfile.write(json_string)
+
+class SplitAudio:
+    def __init__(self, filename, split=2, bpm=None, offset=None, decomposition=None):
+
+        Path("/spleeter_output").mkdir(parents=True, exist_ok=True)
+        self.separate_track(filename, split)
+
+    def separate_track(self, filename, split):
+        valid_splits=[2, 4, 5]
+        if split not in valid_splits:
+            print(f"split must be 2, 4, or 5, but received {split}. Set to default 2.")
+            split = 2
+
+        separator = Separator(f'spleeter:{split}stems')
+        separator.separate_to_file(filename, "spleeter_output")
+
+
