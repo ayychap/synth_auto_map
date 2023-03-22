@@ -81,6 +81,8 @@ def export_file(data: DataContainer, path, realign_start: bool = True):
         outfile.write(final_output)
 
 
+"""EXPERIMENTAL: The following functions are not well tested"""
+
 # Additional movement functions allowing arbitrary position reassignment
 def arbitrary_xy(data: "numpy array (1, 3)", new_locs: dict) -> "numpy array (1, 3)":
     '''
@@ -104,5 +106,13 @@ def snap_to_rail(beats, rail_patterns):
         beats.apply_for_notes(arbitrary_xy, repositioning_map, types=[c])
 
 
-#TODO: add helper functions for thinning (keep only notes on mod 32 subdivision etc.),
-# compressing the map, and changing crossover patterns to parallel
+#TODO: add helper functions
+#
+# For downmapping:
+# Thinning (keep only notes on mod 32 subdivision etc.)
+# Compressing the map
+# Changing crossover patterns to parallel
+#
+# For improving map "sketches" with uneven note placement:
+# Smoothing rails
+# Snapping to grid
