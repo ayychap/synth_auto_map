@@ -10,6 +10,6 @@ setuptools.setup(
     author_email='',
     description='Automation tools for Synth Riders beatmapping',
     package_dir={'': 'src'},
-    python_requires='>=3.10',
+    python_requires='>=3.9',
     install_requires=['librosa', 'spleeter', 'numpy', 'scipy', 'pandas', 'matplotlib', 'synth-mapping-helper', 'mplcyberpunk']
 )
