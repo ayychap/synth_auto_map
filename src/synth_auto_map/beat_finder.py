@@ -24,7 +24,7 @@ class MapConversion:
 
         :param filename: path to audio file
         :param bpm: beats per minute, if known, will be detected otherwise
-        :param offset: offset in milliseconds
+        :param offset: offset in seconds
         :param decomposition: defaults to using the standard file, options are "harmonic" or "percussive"
         '''
         self.y, self.samplingrate = librosa.load(filename)
@@ -40,7 +40,7 @@ class MapConversion:
             # TODO: get autodetection working
             self.offset = 0
         else:
-            self.offset = offset / 1000
+            self.offset = offset
 
         self.timestamps = None
 
