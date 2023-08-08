@@ -2,6 +2,8 @@ from bisect import bisect
 import json
 import math
 import numpy as np
+import argparse
+from pathlib import Path
 
 '''Functions for conversion from Audio Trip .ats files to Synth Riders compatible JSON.
     This will convert gems and ribbons ONLY.
@@ -31,7 +33,7 @@ def xy_synth_to_ats(x, y):
     new: -1 < x < 1
     0 < y < 2"""
 
-    #TODO: update functions, currently wrong
+    # TODO: update functions, currently wrong
     xa = 0.84 * (x - 0.002)
     ya = 1.17 * (y - 0.0012) + 1
 
@@ -288,3 +290,20 @@ def ats_to_synth(path, choreo_name=None, convert_to_rails=False):
         return all_rails(synth_json)
     else:
         return validate_rails(synth_json)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        prog='Audiotrip to Synth Conversion',
+        description='Convert .ats files to Synth Riders json format')
+
+    parser.add_argument("ats", help="read folder with .ats files", type=Path)
+    parser.add_argument("synth", help="write folder for converted files", type=Path)
+    args = parser.parse_args()
+
+    for file in args.ats.glob('*.ats'):
+        filename = file.stem
+        synthmap = ats_to_synth(file)
+        json_string = json.dumps(synthmap)
+        with open(args.synth / f"{filename}.json", "w") as outfile:
+            outfile.write(json_string)
