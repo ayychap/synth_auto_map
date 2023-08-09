@@ -1,4 +1,5 @@
 import unittest
+from pathlib import Path
 from synth_auto_map import stepmania_conversion as sc
 
 # load test choreography
@@ -554,3 +555,11 @@ choreo = r"""#TITLE:Absolutely Smitten;
     0000
     0000
     ,  // measure 3"""
+
+test_path = Path.home() / "Documents/stepmania"
+for file in test_path.glob('*.sm'):
+    filename = file.stem
+    with open(file, "r", encoding="utf-8") as f:
+        choreo = f.read()
+    synthmap = sc.sm_to_synth(choreo)
+    pass
